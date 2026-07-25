@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.abolfazlh110_bot.twa",
+    "sha256_cert_fingerprints": ["82:42:D2:EC:45:88:26:75:8A:A6:46:25:C1:BD:CA:87:15:75:EB:4D:E6:5A:D8:05:CD:53:FD:ED:CE:E9:73:4F"]
+  }
+}]
