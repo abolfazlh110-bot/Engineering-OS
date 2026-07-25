@@ -322,20 +322,21 @@
                 </div>
             </div>
 
-            <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid var(--accent-primary); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
+            <!-- بخش هماهنگ‌شده یادداشت‌ها و لینک‌های درسی -->
+            <div id="course-section" class="content-section" style="background: rgba(99, 102, 241, 0.08); border: 1px solid var(--accent-primary); padding: 14px; border-radius: 10px; margin-bottom: 14px;">
                 <h4 style="color:var(--accent-primary); font-size:0.9rem; margin-bottom:10px;">📚 یادداشت‌ها و منابع درسیِ امروز</h4>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     <div>
-                        <label style="font-size:0.8rem; color:var(--text-muted);">نکات مهم / خلاصه‌نویسی درس:</label>
-                        <textarea id="journal-class-notes" rows="2" placeholder="نکات مهم و کلیدی کلاس یا مطالعه امروز..."></textarea>
+                        <label style="font-size:0.8rem; color:var(--text-muted);" for="course-notes-text">نکات مهم / خلاصه‌نویسی درس:</label>
+                        <textarea id="course-notes-text" rows="2" placeholder="نکات مهم و کلیدی کلاس یا مطالعه امروز..."></textarea>
                     </div>
                     <div>
-                        <label style="font-size:0.8rem; color:var(--text-muted);">لینک‌های مفید (مقاله، ویدیو، وب‌سایت):</label>
-                        <input type="text" id="journal-class-links" placeholder="https://... (لینک‌های مرتبط)">
+                        <label style="font-size:0.8rem; color:var(--text-muted);" for="course-links">لینک‌های مفید (مقاله، ویدیو، وب‌سایت):</label>
+                        <input type="text" id="course-links" placeholder="https://... (لینک‌های مرتبط)">
                     </div>
                     <div>
-                        <label style="font-size:0.8rem; color:var(--text-muted);">بارگذاری عکس یا جزوه (ذخیره مستقیم تصویر):</label>
-                        <input type="file" id="journal-class-file" accept="image/*,.pdf,.doc,.docx" onchange="handleClassFileUpload(event)" style="font-size:0.75rem; cursor:pointer;">
+                        <label style="font-size:0.8rem; color:var(--text-muted);" for="course-file-input">بارگذاری عکس یا جزوه (ذخیره مستقیم تصویر):</label>
+                        <input type="file" id="course-file-input" accept="image/*,.pdf,.doc,.docx" onchange="handleClassFileUpload(event)" style="font-size:0.75rem; cursor:pointer;">
                         <div id="file-upload-status" style="font-size: 0.75rem; color: var(--accent-success); margin-top: 4px;"></div>
                     </div>
                 </div>
@@ -422,6 +423,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('journal-date').value = today;
+        checkAndToggleCourseSection(today);
 
         setLiveDate();
         displayQuote();
@@ -430,10 +432,28 @@
         document.getElementById('journal-date').addEventListener('change', (e) => {
             loadDayData(e.target.value);
             renderWeekStrip(e.target.value);
+            checkAndToggleCourseSection(e.target.value);
         });
 
         initFirebaseSync();
     });
+
+    // تابع بررسی روزهای هفته برای نمایش یا عدم نمایش بخش کلاس‌ها
+    function checkAndToggleCourseSection(selectedDate) {
+        const courseSection = document.getElementById('course-section');
+        if (!courseSection) return;
+
+        const dateObj = new Date(selectedDate);
+        const dayOfWeek = dateObj.getDay(); 
+        // شنبه (6)، یکشنبه (0)، دوشنبه (1)، سه‌شنبه (2)، چهارشنبه (3)
+        const activeDays = [6, 0, 1, 2, 3];
+
+        if (activeDays.includes(dayOfWeek)) {
+            courseSection.style.display = 'block';
+        } else {
+            courseSection.style.display = 'none';
+        }
+    }
 
     function initFirebaseSync() {
         const checkFirebaseReady = setInterval(() => {
@@ -452,6 +472,7 @@
                     const currDate = document.getElementById('journal-date').value;
                     loadDayData(currDate);
                     renderWeekStrip(currDate);
+                    checkAndToggleCourseSection(currDate);
                     renderHeatmap();
                     renderProjects();
                     renderAchievements();
@@ -578,6 +599,7 @@
         currDateInput.value = newDateStr;
         loadDayData(newDateStr);
         renderWeekStrip(newDateStr);
+        checkAndToggleCourseSection(newDateStr);
     }
 
     function renderWeekStrip(selectedDateStr) {
@@ -597,6 +619,7 @@
                 document.getElementById('journal-date').value = dStr;
                 loadDayData(dStr);
                 renderWeekStrip(dStr);
+                checkAndToggleCourseSection(dStr);
             };
             container.appendChild(card);
         }
@@ -628,6 +651,7 @@
                 document.getElementById('journal-date').value = dateStr;
                 loadDayData(dateStr);
                 renderWeekStrip(dateStr);
+                checkAndToggleCourseSection(dateStr);
                 switchPage('page-journal', document.querySelectorAll('.tab-btn')[1]);
             };
             container.appendChild(box);
@@ -744,16 +768,16 @@
     }
 
     function loadDayData(dateStr) {
-        const dayData = db[dateStr] || { report: '', recreationPlan: '', lessons: '', challenges: '', mainGoal: '', classNotes: '', classLinks: '', classFile: '', skills: { classes: 0, study: 0, excel: 0, english: 0 } };
+        const dayData = db[dateStr] || { report: '', recreationPlan: '', lessons: '', challenges: '', mainGoal: '', courseNotes: '', courseLinks: '', courseFile: '', skills: { classes: 0, study: 0, excel: 0, english: 0 } };
         document.getElementById('journal-report').value = dayData.report || '';
         document.getElementById('recreation-plan').value = dayData.recreationPlan || '';
         document.getElementById('journal-lessons').value = dayData.lessons || '';
         document.getElementById('journal-challenges').value = dayData.challenges || '';
         document.getElementById('today-main-goal').value = dayData.mainGoal || '';
         
-        document.getElementById('journal-class-notes').value = dayData.classNotes || '';
-        document.getElementById('journal-class-links').value = dayData.classLinks || '';
-        document.getElementById('file-upload-status').innerText = dayData.classFile ? '📁 فایل/عکس بارگذاری شده است.' : '';
+        document.getElementById('course-notes-text').value = dayData.courseNotes || '';
+        document.getElementById('course-links').value = dayData.courseLinks || '';
+        document.getElementById('file-upload-status').innerText = dayData.courseFile ? '📁 فایل/عکس بارگذاری شده است.' : '';
 
         const skills = dayData.skills || {};
         document.getElementById('skill-classes').value = skills.classes || 0;
@@ -785,9 +809,9 @@
             lessons: document.getElementById('journal-lessons').value,
             challenges: document.getElementById('journal-challenges').value,
             mainGoal: document.getElementById('today-main-goal').value,
-            classNotes: document.getElementById('journal-class-notes').value,
-            classLinks: document.getElementById('journal-class-links').value,
-            classFile: currentUploadedFileBase64 || existingData.classFile || '',
+            courseNotes: document.getElementById('course-notes-text').value,
+            courseLinks: document.getElementById('course-links').value,
+            courseFile: currentUploadedFileBase64 || existingData.courseFile || '',
             skills: {
                 classes: Number(document.getElementById('skill-classes').value) || 0,
                 study: Number(document.getElementById('skill-study').value) || 0,
@@ -865,7 +889,6 @@
             const card = document.createElement('div');
             card.className = 'portfolio-card';
             card.innerHTML = `<strong style="font-size:0.95rem;">${ach.title}</strong><p style="font-size:0.8rem; color:var(--text-muted);">${ach.desc}</p>`;
-            grid.appendChild(card.outerHTML ? card.outerHTML : ''); // Safe handle
             grid.appendChild(card);
         });
     }
