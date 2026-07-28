@@ -1,0 +1,2342 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering OS & Portfolio</title>
+
+    <!-- تنظیمات و متادیتای لازم برای Add to Home Screen (موبایل و PWA) همراه با آیکون اختصاصی -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Eng OS">
+
+    <!-- مانیفست همراه با آیکون گرافیکی اختصاصی شما -->
+    <link rel="manifest" href="manifest.json">
+    <!-- آیکون اپل تداعی‌گر اپلیکیشن در iOS -->
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-accent: #334155;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-secondary: #06b6d4;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-rose: #f43f5e;
+            --border-radius: 16px;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f0fdf4;
+            --bg-secondary: #ffffff;
+            --bg-accent: #e2e8f0;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-primary: #4f46e5;
+            --accent-secondary: #0891b2;
+            --accent-success: #059669;
+            --accent-warning: #d97706;
+            --accent-rose: #e11d48;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            padding: 12px;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            border: 1px solid var(--bg-accent);
+            border-radius: var(--border-radius);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+        .brand-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        /* آیکون جستجو (لنز) */
+        .search-icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .search-icon-btn:hover {
+            background: var(--bg-accent);
+        }
+
+        .sync-badge {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            color: var(--accent-warning);
+            font-weight: bold;
+        }
+        .sync-badge.online {
+            color: var(--accent-success);
+            border-color: var(--accent-success);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            background-color: var(--bg-primary);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--bg-accent);
+            overflow-x: auto;
+            width: 100%;
+            scrollbar-width: none;
+        }
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), #4338ca);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-icon {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            color: var(--text-main);
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-icon:hover {
+            background-color: var(--bg-accent);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 110%;
+            background-color: var(--bg-card);
+            min-width: 160px;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bg-accent);
+            border-radius: 12px;
+            z-index: 100;
+            padding: 6px;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .dropdown:hover .dropdown-content {
+            display: flex;
+        }
+        .dropdown-item {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            text-align: right;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            width: 100%;
+        }
+        .dropdown-item:hover {
+            background-color: var(--bg-primary);
+        }
+        .dropdown-item.danger {
+            color: var(--accent-rose);
+        }
+
+        /* Floating Pomo */
+        .floating-pomo {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background-color: var(--bg-card);
+            border: 1px solid var(--accent-primary);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            padding: 8px 12px;
+            display: none;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            will-change: transform;
+        }
+        .floating-pomo:active {
+            cursor: grabbing;
+        }
+        .floating-pomo.expanded {
+            padding: 14px;
+            width: 210px;
+        }
+
+        .pomo-mini-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .pomo-expanded-content {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .floating-pomo.expanded .pomo-expanded-content {
+            display: flex;
+        }
+        .pomo-display-text {
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-align: center;
+            font-family: monospace;
+            background: var(--bg-primary);
+            padding: 4px;
+            border-radius: 6px;
+            border: 1px solid var(--bg-accent);
+        }
+        .pomo-btn-group {
+            display: flex;
+            gap: 4px;
+        }
+        .pomo-btn-group button {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .page-view {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .page-view.active {
+            display: flex;
+        }
+        .content-section {
+            background-color: var(--bg-card);
+            padding: 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--bg-accent);
+        }
+        .section-title {
+            font-size: 1.05rem;
+            margin-bottom: 14px;
+            color: var(--accent-secondary);
+            font-weight: 800;
+        }
+
+        .dash-header-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(6, 182, 212, 0.15));
+            border: 1px solid var(--accent-primary);
+            padding: 16px;
+            border-radius: var(--border-radius);
+        }
+        .dash-date-badge {
+            background-color: var(--bg-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            border: 1px solid var(--bg-accent);
+            color: var(--accent-secondary);
+            font-size: 0.8rem;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .quote-box {
+            background-color: var(--bg-card);
+            border-right: 4px solid var(--accent-secondary);
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--bg-accent);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .quote-text {
+            font-size: 0.9rem;
+        }
+        .quote-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .dash-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .metric-card {
+            background-color: var(--bg-primary);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--bg-accent);
+            text-align: center;
+        }
+        .metric-card h5 {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+        }
+        .metric-card .value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .grid-4col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .journal-nav-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: var(--bg-primary);
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--bg-accent);
+        }
+        .nav-controls-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .shamsi-badge {
+            background-color: var(--bg-card);
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .arrow-btn {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--bg-accent);
+            color: var(--text-main);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .week-strip {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .week-day-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--bg-accent);
+            padding: 6px 2px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .week-day-card.active {
+            border-color: var(--accent-secondary);
+            background-color: rgba(6, 182, 212, 0.25);
+            font-weight: bold;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(13, 1fr);
+            gap: 4px;
+            margin-top: 10px;
+        }
+        .heatmap-day {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            cursor: pointer;
+        }
+        .heatmap-day[data-level="1"] {
+            background-color: #064e3b;
+        }
+        .heatmap-day[data-level="2"] {
+            background-color: #0d9488;
+        }
+        .heatmap-day[data-level="3"] {
+            background-color: #0284c7;
+        }
+        .heatmap-day[data-level="4"] {
+            background-color: #6366f1;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            transition: transform 0.1s;
+        }
+        .btn-save:hover {
+            transform: scale(1.02);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .portfolio-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .portfolio-card img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 8px;
+            object-fit: cover;
+            border: 1px solid var(--bg-accent);
+        }
+
+        /* ===== بخش تکالیف و جزوات (طراحی جدید) ===== */
+        .tasks-section {
+            margin-top: 10px;
+        }
+        .task-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .task-item:hover {
+            border-color: var(--accent-secondary);
+        }
+        .task-item .task-info {
+            flex: 1;
+            min-width: 150px;
+        }
+        .task-item .task-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .task-item .task-title .task-due {
+            font-size: 0.7rem;
+            background: var(--accent-warning);
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .task-item .task-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .task-item .task-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .task-item .task-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .task-item .task-actions button:hover {
+            background: var(--bg-accent);
+        }
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+        .task-item.overdue .task-title .task-due {
+            background: var(--accent-rose);
+            color: white;
+        }
+
+        /* دکمه افزودن تکلیف (شناور یا بزرگ) */
+        .add-task-btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .add-task-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        /* لیست جزوه‌ها */
+        .notebooks-section {
+            margin-top: 10px;
+        }
+        .notebook-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .notebook-item:hover {
+            border-color: var(--accent-secondary);
+            background: var(--bg-secondary);
+        }
+        .notebook-item .notebook-name {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .notebook-item .notebook-name span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .notebook-item .notebook-actions button {
+            background: none;
+            border: none;
+            color: var(--accent-rose);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .notebook-item .notebook-actions button:hover {
+            background: var(--bg-accent);
+        }
+
+        /* مودال جستجو (اورلی با blur) */
+        .search-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10001;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 20px;
+        }
+        .search-overlay.active {
+            display: flex;
+        }
+        .search-overlay .search-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-accent);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .search-overlay .search-box input {
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            width: 100%;
+            color: var(--text-main);
+        }
+        .search-overlay .search-box .close-search {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.6rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .search-overlay .search-results {
+            margin-top: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
+            position: static;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+        }
+        .search-overlay .search-result-item {
+            background: var(--bg-primary);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 6px;
+            border: 1px solid var(--bg-accent);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .search-overlay .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+        .search-overlay .search-result-item .badge {
+            font-size: 0.65rem;
+            background: var(--bg-accent);
+            padding: 2px 10px;
+            border-radius: 12px;
+            color: var(--text-muted);
+        }
+
+        /* مودال افزودن تکلیف */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-accent);
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .modal-box .modal-close {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+        .modal-box .modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-secondary);
+            margin-bottom: 16px;
+        }
+        .modal-box label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+            color: var(--text-muted);
+        }
+        .modal-box input,
+        .modal-box textarea {
+            margin-top: 4px;
+        }
+
+        /* نمای جزئیات جزوه (صفحه جدید) */
+        .notebook-detail-view {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .notebook-detail-view.active {
+            display: flex;
+        }
+        .notebook-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .notebook-detail-header .back-btn {
+            background: none;
+            border: 1px solid var(--bg-accent);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .notebook-detail-header .back-btn:hover {
+            background: var(--bg-accent);
+        }
+        .notebook-detail-content textarea {
+            min-height: 200px;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .notebook-detail-files {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .notebook-detail-files .file-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--bg-accent);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+        }
+        .notebook-detail-files .file-card img {
+            max-width: 100%;
+            max-height: 100px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+        .notebook-detail-files .file-card .file-name {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            word-break: break-all;
+        }
+        .notebook-detail-files .file-card .file-remove {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* یادآوری‌های امروز در داشبورد */
+        .reminder-card {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--accent-warning);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 8px;
+        }
+        .reminder-card .reminder-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--bg-accent);
+            font-size: 0.85rem;
+        }
+        .reminder-card .reminder-item:last-child {
+            border-bottom: none;
+        }
+        .reminder-card .reminder-time {
+            color: var(--accent-warning);
+            font-weight: 700;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            .container {
+                gap: 24px;
+            }
+            header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 20px;
+            }
+            .header-top-row {
+                flex-wrap: nowrap;
+            }
+            .nav-tabs {
+                width: auto;
+                overflow-x: visible;
+            }
+            .dash-header-bar {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 24px;
+            }
+            .dash-metrics-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .grid-2col {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+            .grid-4col {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+            .content-section {
+                padding: 24px;
+            }
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            .floating-pomo {
+                top: 80vh;
+                left: 70vw;
+                bottom: auto;
+            }
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            header,
+            .nav-tabs,
+            .header-actions,
+            .floating-pomo,
+            .btn-save,
+            .search-overlay,
+            .modal-overlay,
+            .add-task-btn {
+                display: none !important;
+            }
+            .content-section {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+            }
+            input,
+            textarea {
+                border: none !important;
+                background: transparent !important;
+                color: black !important;
+            }
+        }
+    </style>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxvozz28EfxPhDk5uleY3pPuAo0a0jHeQ",
+            authDomain: "my-tracker-app-aefda.firebaseapp.com",
+            databaseURL: "https://my-tracker-app-aefda-default-rtdb.firebaseio.com",
+            projectId: "my-tracker-app-aefda",
+            storageBucket: "my-tracker-app-aefda.firebasestorage.app",
+            messagingSenderId: "1096003365416",
+            appId: "1:1096003365416:web:5c9f4d96d47b83fc13e31d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.firebaseDB = db;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseOnValue = onValue;
+    </script>
+</head>
+<body data-theme="dark">
+
+    <div class="container">
+
+        <header>
+            <div class="header-top-row">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <div class="brand-title">🚀 Eng OS</div>
+                    <div class="sync-badge" id="sync-status">اتصال...</div>
+                </div>
+
+                <!-- آیکون جستجو (لنز) -->
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="search-icon-btn" onclick="openSearchOverlay()">🔍</button>
+                </div>
+
+                <div class="header-actions">
+                    <div class="dropdown">
+                        <button class="btn-icon">📁 منو ▾</button>
+                        <div class="dropdown-content">
+                            <button class="dropdown-item" onclick="exportDatabase()">📥 پشتیبان</button>
+                            <button class="dropdown-item" onclick="importDatabase()">📤 بازیابی</button>
+                            <button class="dropdown-item" onclick="window.print()">🖨️ PDF</button>
+                            <hr style="border:0; border-top:1px solid var(--bg-accent); margin:2px 0;">
+                            <button class="dropdown-item danger" onclick="clearAllData()">🗑️ پاک‌سازی</button>
+                        </div>
+                    </div>
+                    <button class="btn-icon" onclick="toggleTheme()">🌙</button>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchPage('page-dashboard', this)">📊 داشبورد</button>
+                <button class="tab-btn" onclick="switchPage('page-journal', this)">📝 ژورنال</button>
+                <button class="tab-btn" onclick="switchPage('page-tasks', this)">📚 تکالیف و جزوات</button>
+                <button class="tab-btn" onclick="switchPage('page-projects', this)">🏗️ پروژه‌ها</button>
+                <button class="tab-btn" onclick="switchPage('page-portfolio', this)">🏆 دستاوردها</button>
+            </div>
+        </header>
+
+        <input type="file" id="import-file-input" style="display:none" accept=".json" onchange="handleFileSelect(event)">
+
+        <div class="floating-pomo" id="floating-pomo-box">
+            <div class="pomo-mini-toggle">
+                <span>⏱️</span>
+                <span id="pomo-mini-display">25:00</span>
+            </div>
+            <div class="pomo-expanded-content">
+                <div class="pomo-display-text" id="pomo-timer-display">25:00</div>
+                <select id="pomo-target-category" style="padding:6px; font-size:0.75rem;">
+                    <option value="study">مطالعه و متالوگرافی</option>
+                    <option value="excel">مدل‌سازی و Excel</option>
+                </select>
+                <div class="pomo-btn-group">
+                    <button style="background:var(--accent-success); color:white;" onclick="startPomodoro(event)">▶ شروع</button>
+                    <button style="background:var(--accent-rose); color:white;" onclick="pausePomodoro(event)">⏸️ مکث</button>
+                    <button style="background:var(--bg-accent); color:var(--text-main);" onclick="resetPomodoro(event)">🔄</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== داشبورد ===== -->
+        <div id="page-dashboard" class="page-view active">
+            <div class="dash-header-bar">
+                <div>
+                    <h2 style="font-weight:900; font-size:1.2rem;">سلام مهندس، خوش آمدی! 👋</h2>
+                    <p style="color:var(--text-muted); font-size:0.8rem;">آماده برای توسعه پروژه‌های مواد و متالورژی.</p>
+                </div>
+                <div class="dash-date-badge" id="dash-live-date">🗓️ دریافت تاریخ...</div>
+            </div>
+
+            <div class="quote-box">
+                <div class="quote-text" id="quote-text">«دانشمندان آنچه را که هست کشف می‌کنند...»</div>
+                <div class="quote-author" id="quote-author">— تئودور فون کارمان</div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">📊 وضعیت عملکرد تابستان</h3>
+                <div class="dash-metrics-grid">
+                    <div class="metric-card"><h5>روز تابستان</h5><div class="value" id="dash-summer-day">۱/۹۳</div></div>
+                    <div class="metric-card"><h5>ساعات هفته</h5><div class="value" id="dash-weekly-hours">۰h</div></div>
+                    <div class="metric-card"><h5>پیشرفت کل</h5><div class="value" id="dash-avg-progress">۰%</div></div>
+                    <div class="metric-card"><h5>استریک</h5><div class="value" id="dash-streak">۰ روز 🔥</div></div>
+                    <div class="metric-card" style="grid-column: span 2;"><h5>آخرین دستاورد</h5><div class="value" id="dash-last-achievement" style="font-size:0.8rem; padding-top:4px;">ثبت نشده</div></div>
+                </div>
+
+                <div style="background-color:var(--bg-primary); border:1px dashed var(--accent-primary); padding:12px; border-radius:10px; margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                    <strong style="color:var(--accent-primary); font-size: 0.85rem;">🎯 هدف کلیدی امروز:</strong>
+                    <input type="text" id="today-main-goal" placeholder="مهم‌ترین هدفی که باید تمام شود..." onchange="saveTodayGoal(this.value)">
+                </div>
+            </div>
+
+            <!-- بخش یادآوری‌های امروز (تکالیف با ددلاین امروز) -->
+            <div class="content-section" id="today-reminders-section">
+                <h3 class="section-title">⏰ یادآوری‌های امروز</h3>
+                <div id="today-reminders-container"></div>
+            </div>
+
+            <div class="grid-2col">
+                <div class="content-section">
+                    <h3 class="section-title">⏱️ برنامه امروز</h3>
+                    <div style="background-color:var(--bg-primary); border-radius:10px; padding:12px; border:1px solid var(--bg-accent); font-size:0.85rem;" id="dynamic-schedule-container"></div>
+                </div>
+
+                <div class="content-section">
+                    <h3 class="section-title">💡 توصیه‌های مهندسی</h3>
+                    <div style="background-color:var(--bg-primary); padding:14px; border-radius:10px; border:1px solid var(--bg-accent); display:flex; flex-direction:column; gap:10px; font-size:0.85rem;">
+                        <p>🔬 <b>تحلیل فازها:</b> ارتباط ریزساختار و خواص نهایی را مستند کن.</p>
+                        <p>📂 <b>ثبت خروجی‌ها:</b> نتایج محاسبات اکسل را در گالری بگذار.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3 class="section-title" style="margin:0; font-size:1rem;">🟩 نقشه فعالیت تابستان</h3>
+                    <span style="font-size: 0.7rem; color:var(--text-muted);">کم تا زیاد</span>
+                </div>
+                <div class="heatmap-grid" id="heatmap-grid-container"></div>
+            </div>
+        </div>
+
+        <!-- ===== ژورنال ===== -->
+        <div id="page-journal" class="page-view">
+            <div class="content-section">
+                <div class="journal-nav-bar">
+                    <div class="nav-controls-top">
+                        <button class="arrow-btn" onclick="changeDay(-1)">▶ قبل</button>
+                        <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                            <div class="shamsi-badge" id="journal-shamsi-display">📅 تاریخ...</div>
+                            <input type="date" id="journal-date" style="width:auto; cursor:pointer; font-size:0.75rem; padding:4px;">
+                        </div>
+                        <button class="arrow-btn" onclick="changeDay(1)">بعد ◀</button>
+                    </div>
+                    <div class="week-strip" id="week-strip-container"></div>
+                </div>
+
+                <div style="background-color: var(--bg-primary); padding: 14px; border-radius:10px; border:1px solid var(--bg-accent); margin: 16px 0;">
+                    <h4 style="color:var(--accent-secondary); font-size:0.85rem; margin-bottom:10px;">⏱️ ساعات فعالیت امروز:</h4>
+                    <div class="grid-4col" style="font-size:0.8rem;">
+                        <label>کلاس تابستان <input type="number" id="skill-classes" step="0.1" value="0"></label>
+                        <label>متالوگرافی <input type="number" id="skill-study" step="0.1" value="0"></label>
+                        <label>اکسل & مدل <input type="number" id="skill-excel" step="0.1" value="0"></label>
+                        <label>زبان تخصصی <input type="number" id="skill-english" step="0.1" value="0"></label>
+                    </div>
+                </div>
+
+                <!-- بخش هماهنگ‌شده یادداشت‌ها و لینک‌های درسی -->
+                <div id="course-section" class="content-section" style="background: rgba(99,102,241,0.08); border:1px solid var(--accent-primary); padding:14px; border-radius:10px; margin-bottom:14px;">
+                    <h4 style="color:var(--accent-primary); font-size:0.9rem; margin-bottom:10px;">📚 یادداشت‌ها و منابع درسیِ امروز</h4>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);" for="course-notes-text">نکات مهم / خلاصه‌نویسی درس:</label>
+                            <textarea id="course-notes-text" rows="2" placeholder="نکات مهم و کلیدی کلاس یا مطالعه امروز..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);" for="course-links">لینک‌های مفید (مقاله، ویدیو، وب‌سایت):</label>
+                            <input type="text" id="course-links" placeholder="https://... (لینک‌های مرتبط)">
+                        </div>
+                        <div>
+                            <label style="font-size:0.8rem; color:var(--text-muted);" for="course-file-input">بارگذاری عکس یا جزوه (ذخیره مستقیم تصویر):</label>
+                            <input type="file" id="course-file-input" accept="image/*,.pdf,.doc,.docx" onchange="handleClassFileUpload(event)" style="font-size:0.75rem; cursor:pointer;">
+                            <div id="file-upload-status" style="font-size:0.75rem; color:var(--accent-success); margin-top:4px;"></div>
+                            <div id="attached-file-display" style="margin-top:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2col" style="margin-bottom:14px;">
+                    <div class="form-group">
+                        <label style="color:var(--accent-warning); font-size:0.85rem; font-weight:bold;">💡 یادگیری جدید:</label>
+                        <textarea id="journal-lessons" rows="2" placeholder="نکات علمی، فرمول اکسل..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label style="color:var(--accent-rose); font-size:0.85rem; font-weight:bold;">🛠️ چالش و راه‌حل:</label>
+                        <textarea id="journal-challenges" rows="2" placeholder="حل مسئله علمی یا نرم‌افزاری..."></textarea>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="form-group"><label style="font-size:0.85rem;">گزارش کار:</label><textarea id="journal-report" rows="3" placeholder="کارهای انجام‌شده..."></textarea></div>
+                    <div class="form-group"><label style="font-size:0.85rem;">🎮 تفریح و استراحت:</label><textarea id="recreation-plan" rows="3" placeholder="فیلم، ورزش..."></textarea></div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <button class="btn-save" onclick="saveCurrentDayData()">💾 ذخیره اطلاعات امروز</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== تکالیف و جزوات ===== -->
+        <div id="page-tasks" class="page-view">
+            <div class="content-section">
+                <h3 class="section-title">📋 تکالیف روزانه (یادآور)</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <span style="color:var(--text-muted); font-size:0.85rem;">تکالیف خود را با ددلاین ثبت کنید</span>
+                    <button class="add-task-btn" onclick="openAddTaskModal()">➕ افزودن تکلیف</button>
+                </div>
+                <div id="tasks-list-container" class="tasks-section"></div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">📓 جزوه‌های درسی (دفترچه‌ها)</h3>
+                <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                    <input type="text" id="new-notebook-name" placeholder="نام درس (مثلاً متالورژی)" style="flex:1; min-width:150px;">
+                    <button class="btn-save" style="flex:0 0 auto; width:auto; padding:10px 18px;" onclick="addNewNotebook()">➕ افزودن درس</button>
+                </div>
+                <div id="notebooks-list-container" class="notebooks-section"></div>
+            </div>
+        </div>
+
+        <!-- نمای جزئیات جزوه (صفحه داخلی) -->
+        <div id="notebook-detail-view" class="notebook-detail-view">
+            <div class="content-section">
+                <div class="notebook-detail-header">
+                    <h3 class="section-title" id="notebook-detail-title" style="margin:0;">جزوه</h3>
+                    <button class="back-btn" onclick="closeNotebookDetail()">↩ بازگشت به لیست</button>
+                </div>
+                <div style="margin-top:12px;">
+                    <label style="font-weight:600; font-size:0.9rem;">متن جزوه (تایپی):</label>
+                    <textarea id="notebook-detail-notes" rows="8" placeholder="متن جزوه را اینجا بنویسید..."></textarea>
+                </div>
+                <div style="margin-top:16px;">
+                    <label style="font-weight:600; font-size:0.9rem;">بارگذاری فایل (تصویر، PDF و ...):</label>
+                    <input type="file" id="notebook-detail-file-input" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleNotebookDetailFileUpload(event)" style="margin-top:4px;">
+                    <div id="notebook-detail-files-container" class="notebook-detail-files"></div>
+                </div>
+                <button class="btn-save" style="margin-top:16px;" onclick="saveNotebookDetail()">💾 ذخیره جزوه</button>
+            </div>
+        </div>
+
+        <!-- مودال افزودن تکلیف -->
+        <div class="modal-overlay" id="add-task-modal">
+            <div class="modal-box">
+                <button class="modal-close" onclick="closeAddTaskModal()">✖</button>
+                <div class="modal-title">➕ تکلیف جدید</div>
+                <label>عنوان تکلیف</label>
+                <input type="text" id="new-task-title" placeholder="مثلاً: حل تمرین متالورژی">
+                <label>توضیحات (اختیاری)</label>
+                <textarea id="new-task-desc" rows="2" placeholder="توضیحات بیشتر..."></textarea>
+                <label>تاریخ ددلاین</label>
+                <input type="date" id="new-task-due-date">
+                <label>ساعت ددلاین</label>
+                <input type="time" id="new-task-due-time" step="60">
+                <button class="btn-save" style="margin-top:16px;" onclick="addNewTask()">➕ افزودن تکلیف</button>
+            </div>
+        </div>
+
+        <!-- مودال جستجو (اورلی با blur) -->
+        <div class="search-overlay" id="search-overlay">
+            <div class="search-box">
+                <button class="close-search" onclick="closeSearchOverlay()">✖</button>
+                <input type="text" id="global-search-input" placeholder="جستجو در یادداشت‌ها، تکالیف، جزوه‌ها..." oninput="performSearch(this.value)">
+                <div class="search-results" id="search-results-container"></div>
+            </div>
+        </div>
+
+        <!-- ===== پروژه‌ها ===== -->
+        <div id="page-projects" class="page-view">
+            <div class="content-section">
+                <h3 class="section-title">🏗️ مدیریت پروژه‌ها</h3>
+                <div id="projects-container"></div>
+                <button class="btn-save" style="margin-top:12px; background:var(--accent-secondary);" onclick="addNewProject()">➕ افزودن پروژه</button>
+            </div>
+        </div>
+
+        <!-- ===== دستاوردها ===== -->
+        <div id="page-portfolio" class="page-view">
+            <div class="content-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                    <h3 class="section-title" style="margin:0;">🏆 گالری دستاوردها</h3>
+                    <button style="padding:6px 10px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; background-color:var(--accent-success); color:white; font-size:0.75rem;" onclick="openAddAchievementModal()">➕ ثبت جدید</button>
+                </div>
+                <div class="portfolio-grid" id="portfolio-grid"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ----- داده‌های سراسری -----
+        let db = {};
+        let projectsConfig = [];
+        let achievements = [];
+        let tasks = []; // {id, title, description, dueDate (ISO string), dueTime (string), completed}
+        let notebooks = {}; // { 'درس': { notes: '...', files: ['base64', ...] } }
+
+        let pomoSeconds = 25 * 60;
+        let pomoInterval = null;
+
+        // برای نمایش جزئیات جزوه
+        let currentNotebookName = '';
+
+        const dailyQuotes = [
+            { quote: "دانشمندان آنچه را که هست کشف می‌کنند؛ مهندسان آنچه را که هرگز نبوده می‌سازند.", author: "تئودور فون کارمان" },
+            { quote: "بهترین راه برای پیش‌بینی آینده، ساختن آن است.", author: "پیتر دراکر" },
+            { quote: "مهندسی یعنی توانایی تبدیل ایده به واقعیت با بالاترین دقت.", author: "هنری فورد" }
+        ];
+
+        // ----- توابع کمکی -----
+        function getFormattedShamsi(dateObj) {
+            return new Intl.DateTimeFormat('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(dateObj);
+        }
+
+        function getShortShamsiDay(dateObj) {
+            return new Intl.DateTimeFormat('fa-IR', { day: 'numeric' }).format(dateObj);
+        }
+
+        function generateId() {
+            return Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        }
+
+        // ----- تابع switchPage (اصلاح شده) -----
+        function switchPage(pageId, btnEl) {
+            // اگر در حالت نمایش جزوه هستیم، آن را ببندیم
+            closeNotebookDetail();
+
+            document.querySelectorAll('.page-view').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            if (btnEl) btnEl.classList.add('active');
+
+            const pomoBox = document.getElementById('floating-pomo-box');
+            if (pageId === 'page-journal') {
+                pomoBox.style.display = 'flex';
+            } else {
+                pomoBox.style.display = 'none';
+            }
+            // بستن مودال جستجو
+            closeSearchOverlay();
+        }
+
+        // ----- مقداردهی اولیه -----
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('journal-date').value = today;
+            checkAndToggleCourseSection(today);
+
+            setLiveDate();
+            displayQuote();
+            makeWidgetUltraSmooth(document.getElementById('floating-pomo-box'));
+
+            document.getElementById('journal-date').addEventListener('change', (e) => {
+                const val = e.target.value;
+                loadDayData(val);
+                renderWeekStrip(val);
+                checkAndToggleCourseSection(val);
+            });
+
+            initFirebaseSync();
+        });
+
+        function checkAndToggleCourseSection(selectedDate) {
+            const courseSection = document.getElementById('course-section');
+            if (!courseSection) return;
+            const dateObj = new Date(selectedDate);
+            const dayOfWeek = dateObj.getDay();
+            const activeDays = [6, 0, 1, 2, 3];
+            courseSection.style.display = activeDays.includes(dayOfWeek) ? 'block' : 'none';
+        }
+
+        // ----- Firebase Sync -----
+        function initFirebaseSync() {
+            const checkFirebaseReady = setInterval(() => {
+                if (window.firebaseDB) {
+                    clearInterval(checkFirebaseReady);
+                    const rootRef = window.firebaseRef(window.firebaseDB, 'user_data');
+                    window.firebaseOnValue(rootRef, (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            db = data.db || {};
+                            projectsConfig = data.projectsConfig || [];
+                            achievements = data.achievements || [];
+                            tasks = data.tasks || [];
+                            notebooks = data.notebooks || {};
+                        }
+                        const currDate = document.getElementById('journal-date').value;
+                        loadDayData(currDate);
+                        renderWeekStrip(currDate);
+                        checkAndToggleCourseSection(currDate);
+                        renderHeatmap();
+                        renderProjects();
+                        renderAchievements();
+                        renderTasks();
+                        renderNotebooks();
+                        updateDashboard();
+                        renderTodayReminders();
+
+                        const badge = document.getElementById('sync-status');
+                        badge.innerText = '⚡ آنلاین';
+                        badge.classList.add('online');
+                    });
+                }
+            }, 300);
+        }
+
+        function syncToCloud() {
+            if (window.firebaseDB) {
+                const rootRef = window.firebaseRef(window.firebaseDB, 'user_data');
+                window.firebaseSet(rootRef, { db, projectsConfig, achievements, tasks, notebooks })
+                    .catch(err => console.error("Cloud Sync Error:", err));
+            }
+        }
+
+        // ----- ویجت پومودورو -----
+        function makeWidgetUltraSmooth(elmnt) {
+            let currentX = 0,
+                currentY = 0,
+                initialX = 0,
+                initialY = 0;
+            let xOffset = 0,
+                yOffset = 0;
+            let isDragging = false;
+
+            elmnt.addEventListener("mousedown", dragStart);
+            document.addEventListener("mouseup", dragEnd);
+            document.addEventListener("mousemove", drag);
+
+            elmnt.addEventListener("touchstart", dragStart, { passive: false });
+            document.addEventListener("touchend", dragEnd);
+            document.addEventListener("touchmove", drag, { passive: false });
+
+            elmnt.ondblclick = () => {
+                elmnt.classList.toggle('expanded');
+            };
+
+            function dragStart(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.tagName === 'SELECT' || e.target.tagName === 'OPTION') return;
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset;
+                    initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                }
+                isDragging = true;
+            }
+
+            function dragEnd() {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+                xOffset = currentX;
+                yOffset = currentY;
+                setTranslate(currentX, currentY, elmnt);
+            }
+
+            function setTranslate(xPos, yPos, el) {
+                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+            }
+        }
+
+        function startPomodoro(e) {
+            if (e) e.stopPropagation();
+            if (pomoInterval) return;
+            pomoInterval = setInterval(() => {
+                pomoSeconds--;
+                let mins = Math.floor(pomoSeconds / 60);
+                let secs = pomoSeconds % 60;
+                let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                document.getElementById('pomo-timer-display').innerText = timeStr;
+                document.getElementById('pomo-mini-display').innerText = timeStr;
+
+                if (pomoSeconds <= 0) {
+                    clearInterval(pomoInterval);
+                    pomoInterval = null;
+                    pomoSeconds = 25 * 60;
+                    document.getElementById('pomo-timer-display').innerText = "25:00";
+                    document.getElementById('pomo-mini-display').innerText = "25:00";
+
+                    const cat = document.getElementById('pomo-target-category').value;
+                    const fieldId = cat === 'study' ? 'skill-study' : 'skill-excel';
+                    const el = document.getElementById(fieldId);
+                    el.value = (parseFloat(el.value || 0) + 0.4).toFixed(1);
+                    saveCurrentDayData();
+                    alert("🎉 پومودورو تمام شد و ۰.۴ ساعت اضافه شد.");
+                }
+            }, 1000);
+        }
+
+        function pausePomodoro(e) { if (e) e.stopPropagation();
+            clearInterval(pomoInterval);
+            pomoInterval = null; }
+
+        function resetPomodoro(e) { if (e) e.stopPropagation();
+            pausePomodoro();
+            pomoSeconds = 25 * 60;
+            document.getElementById('pomo-timer-display').innerText = "25:00";
+            document.getElementById('pomo-mini-display').innerText = "25:00"; }
+
+        // ----- توابع تاریخ -----
+        function setLiveDate() {
+            document.getElementById('dash-live-date').innerText = `🗓️ امروز: ${getFormattedShamsi(new Date())}`;
+        }
+
+        function displayQuote() {
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const selectedQuote = dailyQuotes[dayOfYear % dailyQuotes.length];
+            document.getElementById('quote-text').innerText = `«${selectedQuote.quote}»`;
+            document.getElementById('quote-author').innerText = `— ${selectedQuote.author}`;
+        }
+
+        function changeDay(offset) {
+            const currDateInput = document.getElementById('journal-date');
+            let currDate = new Date(currDateInput.value);
+            currDate.setDate(currDate.getDate() + offset);
+            const newDateStr = currDate.toISOString().split('T')[0];
+            currDateInput.value = newDateStr;
+            loadDayData(newDateStr);
+            renderWeekStrip(newDateStr);
+            checkAndToggleCourseSection(newDateStr);
+        }
+
+        function renderWeekStrip(selectedDateStr) {
+            const container = document.getElementById('week-strip-container');
+            container.innerHTML = '';
+            let baseDate = new Date(selectedDateStr);
+            document.getElementById('journal-shamsi-display').innerText = `📅 ${getFormattedShamsi(baseDate)}`;
+
+            for (let i = -3; i <= 3; i++) {
+                let d = new Date(baseDate);
+                d.setDate(baseDate.getDate() + i);
+                let dStr = d.toISOString().split('T')[0];
+                let card = document.createElement('div');
+                card.className = `week-day-card ${dStr === selectedDateStr ? 'active' : ''}`;
+                card.innerHTML = `<div>${d.toLocaleDateString('fa-IR', { weekday: 'short' })}</div><b>${getShortShamsiDay(d)}</b>`;
+                card.onclick = () => {
+                    document.getElementById('journal-date').value = dStr;
+                    loadDayData(dStr);
+                    renderWeekStrip(dStr);
+                    checkAndToggleCourseSection(dStr);
+                };
+                container.appendChild(card);
+            }
+        }
+
+        // ----- هیتمپ -----
+        function renderHeatmap() {
+            const container = document.getElementById('heatmap-grid-container');
+            container.innerHTML = '';
+            let startDate = new Date(2026, 5, 22);
+
+            for (let i = 0; i < 93; i++) {
+                let curr = new Date(startDate);
+                curr.setDate(startDate.getDate() + i);
+                let dateStr = curr.toISOString().split('T')[0];
+                let dayData = db[dateStr];
+                let totalHours = dayData && dayData.skills ? Object.values(dayData.skills).reduce((a, b) => a + Number(b), 0) : 0;
+
+                let level = 0;
+                if (totalHours > 0 && totalHours <= 2) level = 1;
+                else if (totalHours > 2 && totalHours <= 5) level = 2;
+                else if (totalHours > 5 && totalHours <= 8) level = 3;
+                else if (totalHours > 8) level = 4;
+
+                const box = document.createElement('div');
+                box.className = 'heatmap-day';
+                if (level > 0) box.setAttribute('data-level', level);
+                box.title = `${getFormattedShamsi(curr)}: ${totalHours} ساعت کار`;
+                box.onclick = () => {
+                    document.getElementById('journal-date').value = dateStr;
+                    loadDayData(dateStr);
+                    renderWeekStrip(dateStr);
+                    checkAndToggleCourseSection(dateStr);
+                    switchPage('page-journal', document.querySelectorAll('.tab-btn')[1]);
+                };
+                container.appendChild(box);
+            }
+        }
+
+        // ----- پشتیبان و بازیابی -----
+        function exportDatabase() {
+            const fullData = { db, projectsConfig, achievements, tasks, notebooks };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Engineering_OS_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importDatabase() { document.getElementById('import-file-input').click(); }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.db) db = importedData.db;
+                    if (importedData.projectsConfig) projectsConfig = importedData.projectsConfig;
+                    if (importedData.achievements) achievements = importedData.achievements;
+                    if (importedData.tasks) tasks = importedData.tasks;
+                    if (importedData.notebooks) notebooks = importedData.notebooks;
+                    syncToCloud();
+                    alert("پشتیبان‌گیری با موفقیت بازیابی شد!");
+                } catch (err) { alert("فایل پشتیبان معتبر نیست."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm("آیا از پاک کردن کامل تمام اطلاعات دیتابیس اطمینان دارید؟")) {
+                db = {};
+                projectsConfig = [];
+                achievements = [];
+                tasks = [];
+                notebooks = {};
+                syncToCloud();
+                location.reload();
+            }
+        }
+
+        // ----- محاسبه استریک (اصلاح شده) -----
+        function calculateStreak() {
+            let streak = 0;
+            const today = new Date();
+            let checkDate = new Date(today);
+            while (true) {
+                const dateStr = checkDate.toISOString().split('T')[0];
+                const dayData = db[dateStr];
+                let totalHours = dayData && dayData.skills ? Object.values(dayData.skills).reduce((a, b) => a + Number(b), 0) : 0;
+                if (totalHours > 0) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+                if (streak > 100) break;
+            }
+            return streak;
+        }
+
+        // ----- آپدیت داشبورد -----
+        function updateDashboard() {
+            const startDate = new Date(2026, 5, 22);
+            const today = new Date();
+            const diffDays = Math.max(1, Math.min(93, Math.ceil((today - startDate) / (1000 * 60 * 60 * 24))));
+            document.getElementById('dash-summer-day').innerText = `${diffDays}/۹۳`;
+
+            let weeklyHours = 0;
+            Object.values(db).forEach(day => {
+                if (day.skills) weeklyHours += Object.values(day.skills).reduce((a, b) => a + Number(b), 0);
+            });
+            document.getElementById('dash-weekly-hours').innerText = `${weeklyHours.toFixed(1)}h`;
+
+            if (projectsConfig.length > 0) {
+                let totalProg = projectsConfig.reduce((acc, p) => acc + Number(p.progress || 0), 0);
+                document.getElementById('dash-avg-progress').innerText = `${Math.round(totalProg / projectsConfig.length)}%`;
+            } else {
+                document.getElementById('dash-avg-progress').innerText = `۰%`;
+            }
+
+            const streak = calculateStreak();
+            document.getElementById('dash-streak').innerText = `${streak} روز 🔥`;
+
+            if (achievements.length > 0) {
+                document.getElementById('dash-last-achievement').innerText = achievements[achievements.length - 1].title;
+            } else {
+                document.getElementById('dash-last-achievement').innerText = `ثبت نشده`;
+            }
+
+            renderDynamicSchedule(today);
+            renderTodayReminders();
+        }
+
+        function renderDynamicSchedule(dateObj) {
+            const dayName = new Intl.DateTimeFormat('fa-IR', { weekday: 'long' }).format(dateObj);
+            const scheduleContainer = document.getElementById('dynamic-schedule-container');
+            if (!scheduleContainer) return;
+
+            let html = '';
+            if (dayName.includes('شنبه') && !dayName.includes('پنج')) {
+                html = `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🗣️ زبان انگلیسی</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۰:۳۰ - ۱۲:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🔬 متالوگرافی & مطالعه مواد</span><span style="background:var(--accent-secondary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۳:۰۰ - ۱۶:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0;"><span>💻 پروژه & مدل‌سازی اکسل</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۷:۰۰ - ۱۹:۰۰</span></div>
+                `;
+            } else if (dayName.includes('یکشنبه')) {
+                html = `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🗣️ زبان انگلیسی</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۰:۳۰ - ۱۲:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>💻 مدل‌سازی اکسل & ریخته‌گری</span><span style="background:var(--accent-secondary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۳:۰۰ - ۱۶:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0;"><span>🎮 استراحت و ورزش</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۸:۰۰ - ۲۰:۰۰</span></div>
+                `;
+            } else if (dayName.includes('دوشنبه') || dayName.includes('سه‌شنبه') || dayName.includes('چهارشنبه')) {
+                html = `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🗣️ زبان انگلیسی</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۰:۳۰ - ۱۲:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🔬 متالوگرافی و تحلیل</span><span style="background:var(--accent-secondary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۳:۰۰ - ۱۵:۳۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>📖 تاریخ تحلیلی اسلام</span><span style="background:var(--accent-warning); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۶:۳۰ - ۱۸:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0;"><span>🚀 مرور و استراحت</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۹:۰۰ - ۲۱:۰۰</span></div>
+                `;
+            } else {
+                html = `
+                    <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--bg-accent);"><span>🏗️ پروژه‌های تابستانه</span><span style="background:var(--accent-success); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۰:۰۰ - ۱۴:۰۰</span></div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 0;"><span>🎮 تفریح و ورزش آزاد</span><span style="background:var(--accent-primary); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">۱۶:۰۰ - ۲۱:۰۰</span></div>
+                `;
+            }
+            scheduleContainer.innerHTML = html;
+        }
+
+        function saveTodayGoal(val) {
+            const today = document.getElementById('journal-date').value;
+            if (!db[today]) db[today] = {};
+            db[today].mainGoal = val;
+            syncToCloud();
+        }
+
+        // ----- بارگذاری داده روز در ژورنال -----
+        function loadDayData(dateStr) {
+            const dayData = db[dateStr] || { report: '', recreationPlan: '', lessons: '', challenges: '', mainGoal: '', courseNotes: '', courseLinks: '', courseFile: '', skills: { classes: 0, study: 0, excel: 0, english: 0 } };
+            document.getElementById('journal-report').value = dayData.report || '';
+            document.getElementById('recreation-plan').value = dayData.recreationPlan || '';
+            document.getElementById('journal-lessons').value = dayData.lessons || '';
+            document.getElementById('journal-challenges').value = dayData.challenges || '';
+            document.getElementById('today-main-goal').value = dayData.mainGoal || '';
+
+            document.getElementById('course-notes-text').value = dayData.courseNotes || '';
+            document.getElementById('course-links').value = dayData.courseLinks || '';
+
+            const skills = dayData.skills || {};
+            document.getElementById('skill-classes').value = skills.classes || 0;
+            document.getElementById('skill-study').value = skills.study || 0;
+            document.getElementById('skill-excel').value = skills.excel || 0;
+            document.getElementById('skill-english').value = skills.english || 0;
+
+            const fileDisplay = document.getElementById('attached-file-display');
+            const fileData = dayData.courseFile || '';
+            if (fileData && fileData.startsWith('data:')) {
+                let fileType = 'فایل';
+                if (fileData.startsWith('data:image')) fileType = 'تصویر';
+                else if (fileData.includes('pdf')) fileType = 'PDF';
+                fileDisplay.innerHTML = `
+                    <div class="file-attachment">
+                        <span>📎 ${fileType} پیوست شده</span>
+                        <a href="${fileData}" target="_blank" download="file_${dateStr}">👁️ مشاهده / دانلود</a>
+                        <button onclick="removeAttachedFile()" style="background:none; border:none; color:var(--accent-rose); cursor:pointer; font-size:0.8rem;">✖</button>
+                    </div>
+                `;
+            } else {
+                fileDisplay.innerHTML = '';
+            }
+        }
+
+        function removeAttachedFile() {
+            const dateStr = document.getElementById('journal-date').value;
+            if (db[dateStr]) {
+                delete db[dateStr].courseFile;
+                syncToCloud();
+                loadDayData(dateStr);
+            }
+        }
+
+        let currentUploadedFileBase64 = '';
+
+        function handleClassFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentUploadedFileBase64 = e.target.result;
+                document.getElementById('file-upload-status').innerText = `✅ فایل ${file.name} با موفقیت آماده ذخیره شد.`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveCurrentDayData() {
+            const dateStr = document.getElementById('journal-date').value;
+            const existingData = db[dateStr] || {};
+
+            db[dateStr] = {
+                report: document.getElementById('journal-report').value,
+                recreationPlan: document.getElementById('recreation-plan').value,
+                lessons: document.getElementById('journal-lessons').value,
+                challenges: document.getElementById('journal-challenges').value,
+                mainGoal: document.getElementById('today-main-goal').value,
+                courseNotes: document.getElementById('course-notes-text').value,
+                courseLinks: document.getElementById('course-links').value,
+                courseFile: currentUploadedFileBase64 || existingData.courseFile || '',
+                skills: {
+                    classes: Number(document.getElementById('skill-classes').value) || 0,
+                    study: Number(document.getElementById('skill-study').value) || 0,
+                    excel: Number(document.getElementById('skill-excel').value) || 0,
+                    english: Number(document.getElementById('skill-english').value) || 0
+                }
+            };
+            currentUploadedFileBase64 = '';
+            syncToCloud();
+            alert("اطلاعات این روز ذخیره شد.");
+            loadDayData(dateStr);
+            updateDashboard();
+        }
+
+        // ----- پروژه‌ها -----
+        function renderProjects() {
+            const container = document.getElementById('projects-container');
+            container.innerHTML = '';
+            if (projectsConfig.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px;">پروژه‌ای وجود ندارد. از دکمه زیر برای افزودن استفاده کنید.</div>`;
+                return;
+            }
+            projectsConfig.forEach(proj => {
+                const pDiv = document.createElement('div');
+                pDiv.style.cssText = 'background:var(--bg-primary); padding:14px; border-radius:10px; margin-bottom:12px; border:1px solid var(--bg-accent); display:flex; flex-direction:column; gap:8px;';
+
+                let barColor = 'var(--accent-warning)';
+                if (proj.progress >= 70) barColor = 'var(--accent-success)';
+                else if (proj.progress >= 30) barColor = 'var(--accent-primary)';
+
+                pDiv.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                        <input type="text" style="background:transparent; border:none; font-weight:bold; font-size:0.9rem;" value="${proj.title}" onchange="updateProject('${proj.id}', 'title', this.value)">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <div style="display:flex; align-items:center; gap:4px; font-weight:bold; color:${barColor};">
+                                <input type="number" min="0" max="100" style="width:50px; text-align:center; padding:4px; font-weight:bold; font-size:0.85rem;" value="${proj.progress}" onchange="updateProject('${proj.id}', 'progress', this.value)">
+                                <span style="font-size:0.85rem;">٪</span>
+                            </div>
+                            <button onclick="deleteProject('${proj.id}')" style="background:none; border:none; color:var(--accent-rose); cursor:pointer; font-size:1rem; padding:4px;" title="حذف پروژه">🗑️</button>
+                        </div>
+                    </div>
+                    <div style="width:100%; height:8px; background-color:var(--bg-card); border-radius:8px; overflow:hidden; border:1px solid var(--bg-accent);">
+                        <div style="width:${Math.min(100, Math.max(0, proj.progress))}%; height:100%; background:${barColor}; border-radius:8px; transition: width 0.4s ease-in-out;"></div>
+                    </div>
+                `;
+                container.appendChild(pDiv);
+            });
+        }
+
+        function updateProject(id, key, val) {
+            const proj = projectsConfig.find(p => p.id === id);
+            if (proj) {
+                proj[key] = key === 'progress' ? Math.min(100, Math.max(0, Number(val) || 0)) : val;
+                syncToCloud();
+                renderProjects();
+                updateDashboard();
+            }
+        }
+
+        function deleteProject(id) {
+            if (confirm("آیا از حذف این پروژه اطمینان دارید؟")) {
+                projectsConfig = projectsConfig.filter(p => p.id !== id);
+                syncToCloud();
+                renderProjects();
+                updateDashboard();
+            }
+        }
+
+        function addNewProject() {
+            projectsConfig.push({ id: `proj-${Date.now()}`, title: `پروژه جدید`, progress: 0 });
+            syncToCloud();
+            renderProjects();
+            updateDashboard();
+        }
+
+        // ----- دستاوردها (با عکس) -----
+        function renderAchievements() {
+            const grid = document.getElementById('portfolio-grid');
+            grid.innerHTML = '';
+            achievements.forEach(ach => {
+                const card = document.createElement('div');
+                card.className = 'portfolio-card';
+                let imgHtml = '';
+                if (ach.image && ach.image.startsWith('data:')) {
+                    imgHtml = `<img src="${ach.image}" alt="تصویر دستاورد">`;
+                }
+                card.innerHTML = `<strong style="font-size:0.95rem;">${ach.title}</strong><p style="font-size:0.8rem; color:var(--text-muted);">${ach.desc || ''}</p>${imgHtml}`;
+                grid.appendChild(card);
+            });
+        }
+
+        function openAddAchievementModal() {
+            const title = prompt("عنوان دستاورد:");
+            if (!title) return;
+            const desc = prompt("توضیحات کوتاه:");
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) {
+                    achievements.push({ title, desc, image: '' });
+                    syncToCloud();
+                    renderAchievements();
+                    updateDashboard();
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    achievements.push({ title, desc, image: ev.target.result });
+                    syncToCloud();
+                    renderAchievements();
+                    updateDashboard();
+                };
+                reader.readAsDataURL(file);
+            };
+            fileInput.click();
+        }
+
+        // ----- تکالیف (نسخه جدید) -----
+        function renderTasks() {
+            const container = document.getElementById('tasks-list-container');
+            container.innerHTML = '';
+            if (tasks.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px;">هیچ تکلیفی ثبت نشده است.</div>`;
+                return;
+            }
+            // مرتب‌سازی: ابتدا انجام‌نشده‌ها و سپس بر اساس ددلاین (نزدیک‌ترین اول)
+            const sorted = [...tasks].sort((a, b) => {
+                if (a.completed !== b.completed) return Number(a.completed) - Number(b.completed);
+                if (a.dueDate && b.dueDate) return new Date(a.dueDate + 'T' + (a.dueTime || '00:00')) - new Date(b.dueDate + 'T' + (b.dueTime || '00:00'));
+                return 0;
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            sorted.forEach(task => {
+                const div = document.createElement('div');
+                div.className = `task-item ${task.completed ? 'completed' : ''}`;
+                // بررسی اینکه آیا ددلاین گذشته است (فقط اگر انجام نشده باشد)
+                let isOverdue = false;
+                if (!task.completed && task.dueDate) {
+                    const dueDate = new Date(task.dueDate + 'T' + (task.dueTime || '00:00'));
+                    if (dueDate < new Date()) isOverdue = true;
+                }
+                if (isOverdue) div.classList.add('overdue');
+
+                let dueText = '';
+                if (task.dueDate) {
+                    const dueDateObj = new Date(task.dueDate + 'T' + (task.dueTime || '00:00'));
+                    const formatted = new Intl.DateTimeFormat('fa-IR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(dueDateObj);
+                    dueText = `<span class="task-due">${formatted}</span>`;
+                }
+
+                div.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-title">
+                            ${task.title}
+                            ${dueText}
+                        </div>
+                        ${task.description ? `<div class="task-desc">${task.description}</div>` : ''}
+                    </div>
+                    <div class="task-actions">
+                        <button onclick="toggleTask('${task.id}')" style="color:var(--accent-success);" title="تغییر وضعیت">${task.completed ? '✅' : '⬜'}</button>
+                        <button onclick="deleteTask('${task.id}')" style="color:var(--accent-rose);" title="حذف">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function openAddTaskModal() {
+            document.getElementById('add-task-modal').classList.add('active');
+            // تنظیم تاریخ پیش‌فرض به امروز
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('new-task-due-date').value = today;
+            document.getElementById('new-task-due-time').value = '12:00';
+            document.getElementById('new-task-title').value = '';
+            document.getElementById('new-task-desc').value = '';
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('add-task-modal').classList.remove('active');
+        }
+
+        function addNewTask() {
+            const title = document.getElementById('new-task-title').value.trim();
+            if (!title) { alert('لطفاً عنوان تکلیف را وارد کنید.'); return; }
+            const desc = document.getElementById('new-task-desc').value.trim();
+            const dueDate = document.getElementById('new-task-due-date').value;
+            const dueTime = document.getElementById('new-task-due-time').value;
+
+            tasks.push({
+                id: generateId(),
+                title,
+                description: desc,
+                dueDate: dueDate || '',
+                dueTime: dueTime || '',
+                completed: false
+            });
+            syncToCloud();
+            renderTasks();
+            closeAddTaskModal();
+            updateDashboard();
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) { task.completed = !task.completed;
+                syncToCloud();
+                renderTasks();
+                updateDashboard(); }
+        }
+
+        function deleteTask(id) {
+            if (confirm('آیا این تکلیف حذف شود؟')) {
+                tasks = tasks.filter(t => t.id !== id);
+                syncToCloud();
+                renderTasks();
+                updateDashboard();
+            }
+        }
+
+        // ----- یادآوری‌های امروز (در داشبورد) -----
+        function renderTodayReminders() {
+            const container = document.getElementById('today-reminders-container');
+            if (!container) return;
+            const today = new Date().toISOString().split('T')[0];
+            const todayTasks = tasks.filter(t => t.dueDate === today && !t.completed);
+
+            if (todayTasks.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem;">📭 هیچ تکلیفی برای امروز ندارید.</div>`;
+                return;
+            }
+
+            let html = `<div class="reminder-card">`;
+            todayTasks.forEach(task => {
+                const time = task.dueTime ? task.dueTime : 'نامشخص';
+                html += `
+                    <div class="reminder-item">
+                        <span>📌 ${task.title}</span>
+                        <span class="reminder-time">⏰ ${time}</span>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // ----- جزوه‌ها (دفترچه‌ها) با نمای جدید -----
+        function renderNotebooks() {
+            const container = document.getElementById('notebooks-list-container');
+            container.innerHTML = '';
+            const names = Object.keys(notebooks);
+            if (names.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px;">هیچ درس‌ای ثبت نشده است.</div>`;
+                return;
+            }
+            names.sort();
+            names.forEach(name => {
+                const nb = notebooks[name];
+                const fileCount = (nb.files || []).length;
+                const div = document.createElement('div');
+                div.className = 'notebook-item';
+                div.innerHTML = `
+                    <div class="notebook-name">
+                        📘 ${name}
+                        <span>${fileCount} فایل</span>
+                    </div>
+                    <div class="notebook-actions">
+                        <button onclick="openNotebookDetail('${name}')" style="color:var(--accent-secondary);">✏️ ویرایش</button>
+                        <button onclick="deleteNotebook('${name}')">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addNewNotebook() {
+            const input = document.getElementById('new-notebook-name');
+            const name = input.value.trim();
+            if (!name) { alert('لطفاً نام درس را وارد کنید.'); return; }
+            if (notebooks[name]) { alert('این درس قبلاً ثبت شده است.'); return; }
+            notebooks[name] = { notes: '', files: [] };
+            input.value = '';
+            syncToCloud();
+            renderNotebooks();
+        }
+
+        function deleteNotebook(name) {
+            if (confirm(`آیا جزوه "${name}" حذف شود؟`)) {
+                delete notebooks[name];
+                if (currentNotebookName === name) closeNotebookDetail();
+                syncToCloud();
+                renderNotebooks();
+            }
+        }
+
+        // ----- نمایش جزئیات جزوه (صفحه جدید) -----
+        function openNotebookDetail(name) {
+            if (!notebooks[name]) return;
+            currentNotebookName = name;
+            const data = notebooks[name];
+
+            // مخفی کردن صفحه تکالیف و نمایش نمای جزئیات
+            document.getElementById('page-tasks').classList.remove('active');
+            document.getElementById('notebook-detail-view').classList.add('active');
+
+            document.getElementById('notebook-detail-title').innerText = `📓 ${name}`;
+            document.getElementById('notebook-detail-notes').value = data.notes || '';
+
+            // نمایش فایل‌ها
+            renderNotebookDetailFiles(data.files || []);
+        }
+
+        function renderNotebookDetailFiles(files) {
+            const container = document.getElementById('notebook-detail-files-container');
+            container.innerHTML = '';
+            if (files.length === 0) {
+                container.innerHTML = `<span style="color:var(--text-muted); font-size:0.85rem;">هیچ فایلی آپلود نشده است.</span>`;
+                return;
+            }
+            files.forEach((fileData, index) => {
+                const card = document.createElement('div');
+                card.className = 'file-card';
+                let preview = '';
+                if (fileData.startsWith('data:image')) {
+                    preview = `<img src="${fileData}" alt="تصویر">`;
+                } else {
+                    preview = `<div style="font-size:2rem; padding:10px;">📄</div>`;
+                }
+                card.innerHTML = `
+                    ${preview}
+                    <div class="file-name">فایل ${index+1}</div>
+                    <a href="${fileData}" target="_blank" download="file_${index}" style="font-size:0.7rem; color:var(--accent-secondary);">مشاهده</a>
+                    <button class="file-remove" onclick="removeNotebookDetailFile(${index})">✖</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        let notebookDetailFiles = [];
+
+        function handleNotebookDetailFileUpload(event) {
+            const files = event.target.files;
+            const currentFiles = notebooks[currentNotebookName]?.files || [];
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentFiles.push(e.target.result);
+                    notebooks[currentNotebookName].files = currentFiles;
+                    renderNotebookDetailFiles(currentFiles);
+                };
+                reader.readAsDataURL(file);
+            }
+            event.target.value = '';
+        }
+
+        function removeNotebookDetailFile(index) {
+            const currentFiles = notebooks[currentNotebookName]?.files || [];
+            currentFiles.splice(index, 1);
+            notebooks[currentNotebookName].files = currentFiles;
+            renderNotebookDetailFiles(currentFiles);
+        }
+
+        function saveNotebookDetail() {
+            const name = currentNotebookName;
+            if (!name || !notebooks[name]) return;
+            const notes = document.getElementById('notebook-detail-notes').value;
+            notebooks[name].notes = notes;
+            // فایل‌ها قبلاً در array ذخیره شده‌اند
+            syncToCloud();
+            alert('جزوه ذخیره شد.');
+            renderNotebooks();
+        }
+
+        function closeNotebookDetail() {
+            document.getElementById('notebook-detail-view').classList.remove('active');
+            // اگر در تب tasks بودیم، آن را فعال کنیم
+            const tasksTab = document.querySelector('.tab-btn[onclick*="page-tasks"]');
+            if (tasksTab) {
+                document.getElementById('page-tasks').classList.add('active');
+                tasksTab.classList.add('active');
+            }
+            currentNotebookName = '';
+        }
+
+        // ===== جستجوی سراسری (اورلی با blur) =====
+        function openSearchOverlay() {
+            document.getElementById('search-overlay').classList.add('active');
+            document.getElementById('global-search-input').value = '';
+            document.getElementById('search-results-container').innerHTML = '';
+            document.getElementById('global-search-input').focus();
+        }
+
+        function closeSearchOverlay() {
+            document.getElementById('search-overlay').classList.remove('active');
+        }
+
+        function performSearch(query) {
+            const container = document.getElementById('search-results-container');
+            container.innerHTML = '';
+            const trimmed = query.trim().toLowerCase();
+            if (trimmed.length < 2) {
+                container.innerHTML = `<div style="padding:10px; color:var(--text-muted); text-align:center;">حداقل ۲ کاراکتر وارد کنید</div>`;
+                return;
+            }
+
+            let results = [];
+
+            // 1. ژورنال
+            Object.keys(db).forEach(date => {
+                const day = db[date];
+                const texts = [
+                    day.report || '',
+                    day.lessons || '',
+                    day.challenges || '',
+                    day.mainGoal || '',
+                    day.courseNotes || '',
+                    day.courseLinks || ''
+                ];
+                const matched = texts.some(t => t.toLowerCase().includes(trimmed));
+                if (matched) {
+                    results.push({
+                        type: 'ژورنال',
+                        title: `📝 یادداشت‌های ${getFormattedShamsi(new Date(date))}`,
+                        date: date,
+                        preview: (day.report || day.lessons || day.mainGoal || '').slice(0, 60) + '...'
+                    });
+                }
+            });
+
+            // 2. تکالیف
+            tasks.forEach(task => {
+                if (task.title.toLowerCase().includes(trimmed) || (task.description && task.description.toLowerCase().includes(trimmed))) {
+                    results.push({
+                        type: 'تکلیف',
+                        title: `📋 ${task.title}`,
+                        date: null,
+                        preview: task.description || '',
+                        taskId: task.id
+                    });
+                }
+            });
+
+            // 3. جزوه‌ها
+            Object.keys(notebooks).forEach(name => {
+                const nb = notebooks[name];
+                if (name.toLowerCase().includes(trimmed) || (nb.notes && nb.notes.toLowerCase().includes(trimmed))) {
+                    results.push({
+                        type: 'جزوه',
+                        title: `📘 ${name}`,
+                        date: null,
+                        preview: (nb.notes || '').slice(0, 60) + '...',
+                        notebookName: name
+                    });
+                }
+            });
+
+            // 4. پروژه‌ها
+            projectsConfig.forEach(p => {
+                if (p.title.toLowerCase().includes(trimmed)) {
+                    results.push({
+                        type: 'پروژه',
+                        title: `🏗️ ${p.title}`,
+                        date: null,
+                        preview: `پیشرفت: ${p.progress}%`
+                    });
+                }
+            });
+
+            // 5. دستاوردها
+            achievements.forEach(a => {
+                if (a.title.toLowerCase().includes(trimmed) || (a.desc && a.desc.toLowerCase().includes(trimmed))) {
+                    results.push({
+                        type: 'دستاورد',
+                        title: `🏆 ${a.title}`,
+                        date: null,
+                        preview: a.desc || ''
+                    });
+                }
+            });
+
+            if (results.length === 0) {
+                container.innerHTML = `<div style="padding:10px; color:var(--text-muted); text-align:center;">نتیجه‌ای یافت نشد.</div>`;
+                return;
+            }
+
+            results.slice(0, 15).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                let label = item.type;
+                let onClick = null;
+                if (item.type === 'ژورنال' && item.date) {
+                    onClick = () => {
+                        closeSearchOverlay();
+                        document.getElementById('journal-date').value = item.date;
+                        loadDayData(item.date);
+                        renderWeekStrip(item.date);
+                        checkAndToggleCourseSection(item.date);
+                        switchPage('page-journal', document.querySelectorAll('.tab-btn')[1]);
+                    };
+                } else if (item.type === 'تکلیف') {
+                    onClick = () => {
+                        closeSearchOverlay();
+                        switchPage('page-tasks', document.querySelectorAll('.tab-btn')[2]);
+                    };
+                } else if (item.type === 'جزوه' && item.notebookName) {
+                    onClick = () => {
+                        closeSearchOverlay();
+                        switchPage('page-tasks', document.querySelectorAll('.tab-btn')[2]);
+                        // باز کردن جزوه
+                        setTimeout(() => openNotebookDetail(item.notebookName), 200);
+                    };
+                } else {
+                    onClick = () => {
+                        closeSearchOverlay();
+                        if (item.type === 'پروژه') switchPage('page-projects', document.querySelectorAll('.tab-btn')[3]);
+                        else if (item.type === 'دستاورد') switchPage('page-portfolio', document.querySelectorAll('.tab-btn')[4]);
+                        else switchPage('page-dashboard', document.querySelectorAll('.tab-btn')[0]);
+                    };
+                }
+
+                div.innerHTML = `
+                    <span>${item.title}</span>
+                    <span class="badge">${item.type}</span>
+                `;
+                div.addEventListener('click', onClick);
+                container.appendChild(div);
+            });
+        }
+
+        // ----- تم -----
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
+
+        // بستن مودال‌ها با کلیک روی overlay
+        document.getElementById('add-task-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeAddTaskModal();
+        });
+        document.getElementById('search-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeSearchOverlay();
+        });
+    </script>
+
+</body>
+</html>
